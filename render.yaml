@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: invoiceflow
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: STRIPE_PUBLIC_KEY
+        value: pk_test_placeholder
+      - key: STRIPE_SECRET_KEY
+        value: sk_test_placeholder
+      - key: STRIPE_PRICE_ID
+        value: price_placeholder
+      - key: STRIPE_WEBHOOK_SECRET
+        value: whsec_placeholder
