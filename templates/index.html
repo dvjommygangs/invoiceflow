@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Invoice for Freelancers{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Invoice like a pro.<br>Get paid in <span class="highlight">USD</span>.</h1>
+        <p class="hero-sub">Built for Kenyan freelancers working with international clients. Create, send, and track professional USD invoices in minutes.</p>
+        <div class="hero-cta">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Start Free <i class="fas fa-arrow-right"></i></a>
+            <a href="{{ url_for('pricing') }}" class="btn btn-outline btn-lg">See Pricing</a>
+        </div>
+        <p class="hero-small">No credit card required &middot; Free plan: 5 invoices/month</p>
+    </div>
+</section>
+
+<section class="features">
+    <h2 class="section-title">Why InvoiceFlow?</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <i class="fas fa-dollar-sign feature-icon"></i>
+            <h3>USD Invoices</h3>
+            <p>Invoice your international clients in USD. No more currency confusion.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-file-pdf feature-icon"></i>
+            <h3>PDF Export</h3>
+            <p>Professional PDF invoices ready to send. Your clients will be impressed.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-chart-line feature-icon"></i>
+            <h3>Track Payments</h3>
+            <p>Know who has paid, who hasn't, and what's overdue at a glance.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-bolt feature-icon"></i>
+            <h3>Fast Setup</h3>
+            <p>Create your first invoice in under 2 minutes. No learning curve.</p>
+        </div>
+    </div>
+</section>
+
+<section class="pricing-tease">
+    <h2 class="section-title">Simple Pricing</h2>
+    <div class="pricing-cards">
+        <div class="pricing-card">
+            <h3>Free</h3>
+            <p class="price">$0</p>
+            <ul>
+                <li>5 invoices/month</li>
+                <li>PDF export</li>
+                <li>Payment tracking</li>
+            </ul>
+            <a href="{{ url_for('register') }}" class="btn btn-outline">Get Started</a>
+        </div>
+        <div class="pricing-card featured">
+            <div class="badge">Popular</div>
+            <h3>Pro</h3>
+            <p class="price">$9<span>/mo</span></p>
+            <ul>
+                <li>Unlimited invoices</li>
+                <li>PDF export</li>
+                <li>Payment tracking</li>
+                <li>Custom branding</li>
+                <li>Email reminders</li>
+                <li>Priority support</li>
+            </ul>
+            <a href="{{ url_for('register') }}" class="btn btn-primary">Start Free Trial</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

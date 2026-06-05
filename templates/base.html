@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvoiceFlow - {% block title %}Home{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="{{ url_for('index') }}" class="nav-brand">
+                <i class="fas fa-file-invoice"></i> InvoiceFlow
+            </a>
+            <div class="nav-links">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('invoices') }}">Invoices</a>
+                    <a href="{{ url_for('pricing') }}">Pricing</a>
+                    <span class="nav-user"><i class="fas fa-user"></i> {{ current_user.email }}</span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('pricing') }}">Pricing</a>
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-sm btn-primary">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        {{ message }}
+                        <button onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 InvoiceFlow. Built in Kenya, earning in USD.</p>
+        </div>
+    </footer>
+</body>
+</html>

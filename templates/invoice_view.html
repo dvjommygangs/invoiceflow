@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<div class="invoice-view">
+    <div class="invoice-actions-top">
+        <a href="{{ url_for('invoices') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+        <div>
+            <a href="{{ url_for('invoice_edit', id=invoice.id) }}" class="btn btn-outline"><i class="fas fa-edit"></i> Edit</a>
+            <a href="{{ url_for('invoice_pdf', id=invoice.id) }}" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Download PDF</a>
+        </div>
+    </div>
+
+    <div class="invoice-paper">
+        <div class="invoice-header">
+            <div>
+                <h2>{{ current_user.business_name or current_user.email }}</h2>
+                <p>{{ current_user.email }}</p>
+            </div>
+            <div class="invoice-meta">
+                <h3>{{ invoice.invoice_number }}</h3>
+                <p>Status: <span class="status status-{{ invoice.status }}">{{ invoice.status }}</span></p>
+                <p>Date: {{ invoice.created_at.strftime('%Y-%m-%d') }}</p>
+                <p>Due: {{ invoice.due_date or 'N/A' }}</p>
+            </div>
+        </div>
+
+        <div class="invoice-client">
+            <h4>Bill To:</h4>
+            <p><strong>{{ invoice.client_name }}</strong></p>
+            <p>{{ invoice.client_email }}</p>
+            <p>{{ invoice.client_address }}</p>
+        </div>
+
+        <table class="table invoice-items">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ "%.2f"|format(item.rate) }}</td>
+                    <td>${{ "%.2f"|format(item.quantity * item.rate) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="invoice-totals">
+            <div class="total-row"><span>Subtotal</span><span>${{ "%.2f"|format(invoice.subtotal) }}</span></div>
+            <div class="total-row"><span>Tax ({{ invoice.tax_rate }}%)</span><span>${{ "%.2f"|format(invoice.tax_amount) }}</span></div>
+            <div class="total-row total-final"><span>Total (USD)</span><span>${{ "%.2f"|format(invoice.total) }}</span></div>
+        </div>
+
+        {% if invoice.notes %}
+        <div class="invoice-notes">
+            <h4>Notes</h4>
+            <p>{{ invoice.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="invoice-actions-bottom">
+        {% if invoice.status == 'draft' %}
+        <a href="{{ url_for('invoice_send', id=invoice.id) }}" class="btn btn-primary" onclick="return confirm('Mark as sent?')"><i class="fas fa-paper-plane"></i> Mark as Sent</a>
+        {% endif %}
+        {% if invoice.status == 'sent' %}
+        <a href="{{ url_for('invoice_paid', id=invoice.id) }}" class="btn btn-success" onclick="return confirm('Mark as paid?')"><i class="fas fa-check"></i> Mark as Paid</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

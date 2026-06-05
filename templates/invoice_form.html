@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if invoice else 'New' }} Invoice{% endblock %}
+{% block content %}
+<div class="form-page">
+    <h2>{{ 'Edit' if invoice else 'New' }} Invoice</h2>
+    <form method="POST" id="invoiceForm">
+        <div class="form-section">
+            <h3>Client Details</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Client Name *</label>
+                    <input type="text" name="client_name" required class="form-control"
+                           value="{{ invoice.client_name if invoice else '' }}" placeholder="Client name">
+                </div>
+                <div class="form-group">
+                    <label>Client Email</label>
+                    <input type="email" name="client_email" class="form-control"
+                           value="{{ invoice.client_email if invoice else '' }}" placeholder="client@example.com">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Client Address</label>
+                <textarea name="client_address" class="form-control" rows="2" placeholder="Client address">{{ invoice.client_address if invoice else '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Invoice Details</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" name="due_date" class="form-control"
+                           value="{{ invoice.due_date if invoice else '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Tax Rate (%)</label>
+                    <input type="number" name="tax_rate" class="form-control" step="0.1" min="0"
+                           value="{{ invoice.tax_rate if invoice else '0' }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Line Items</h3>
+            <table class="table" id="itemsTable">
+                <thead>
+                    <tr>
+                        <th style="width:50%">Description</th>
+                        <th>Quantity</th>
+                        <th>Rate (USD)</th>
+                        <th>Amount</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if invoice and invoice.items %}
+                        {% set items = invoice.items|fromjson %}
+                        {% for item in items %}
+                        <tr class="item-row">
+                            <td><input type="text" name="description[]" class="form-control" value="{{ item.description }}" placeholder="Service description"></td>
+                            <td><input type="number" name="quantity[]" class="form-control qty" value="{{ item.quantity }}" step="1" min="1"></td>
+                            <td><input type="number" name="rate[]" class="form-control rate" value="{{ item.rate }}" step="0.01" min="0"></td>
+                            <td class="amount">$0.00</td>
+                            <td><button type="button" class="btn-icon delete" onclick="this.closest('tr').remove(); updateTotals();"><i class="fas fa-times"></i></button></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr class="item-row">
+                        <td><input type="text" name="description[]" class="form-control" placeholder="Web development"></td>
+                        <td><input type="number" name="quantity[]" class="form-control qty" value="1" step="1" min="1"></td>
+                        <td><input type="number" name="rate[]" class="form-control rate" value="0" step="0.01" min="0"></td>
+                        <td class="amount">$0.00</td>
+                        <td><button type="button" class="btn-icon delete" onclick="this.closest('tr').remove(); updateTotals();"><i class="fas fa-times"></i></button></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-sm btn-outline" onclick="addItem()"><i class="fas fa-plus"></i> Add Item</button>
+        </div>
+
+        <div class="form-section">
+            <div class="form-group">
+                <label>Notes (optional)</label>
+                <textarea name="notes" class="form-control" rows="2" placeholder="Payment instructions, thank you note, etc.">{{ invoice.notes if invoice else '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('invoices') }}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                {{ 'Update' if invoice else 'Create' }} Invoice
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function addItem() {
+    const tbody = document.querySelector('#itemsTable tbody');
+    const row = document.createElement('tr');
+    row.className = 'item-row';
+    row.innerHTML = `
+        <td><input type="text" name="description[]" class="form-control" placeholder="Service description"></td>
+        <td><input type="number" name="quantity[]" class="form-control qty" value="1" step="1" min="1"></td>
+        <td><input type="number" name="rate[]" class="form-control rate" value="0" step="0.01" min="0"></td>
+        <td class="amount">$0.00</td>
+        <td><button type="button" class="btn-icon delete" onclick="this.closest('tr').remove(); updateTotals();"><i class="fas fa-times"></i></button></td>
+    `;
+    tbody.appendChild(row);
+    row.querySelector('.qty').addEventListener('input', updateTotals);
+    row.querySelector('.rate').addEventListener('input', updateTotals);
+}
+
+function updateTotals() {
+    document.querySelectorAll('.item-row').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty').value) || 0;
+        const rate = parseFloat(row.querySelector('.rate').value) || 0;
+        row.querySelector('.amount').textContent = '$' + (qty * rate).toFixed(2);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.qty, .rate').forEach(el => {
+        el.addEventListener('input', updateTotals);
+    });
+    updateTotals();
+});
+</script>
+{% endblock %}

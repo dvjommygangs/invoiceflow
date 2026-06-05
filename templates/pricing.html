@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Pricing{% endblock %}
+{% block content %}
+<div class="pricing-page">
+    <h2>Simple, transparent pricing</h2>
+    <p class="pricing-sub">Start free. Upgrade when you need more.</p>
+
+    <div class="pricing-cards">
+        <div class="pricing-card">
+            <h3>Free</h3>
+            <p class="price">$0</p>
+            <p class="price-period">forever</p>
+            <ul>
+                <li><i class="fas fa-check"></i> 5 invoices/month</li>
+                <li><i class="fas fa-check"></i> PDF export</li>
+                <li><i class="fas fa-check"></i> Payment tracking</li>
+                <li><i class="fas fa-check"></i> USD invoices</li>
+            </ul>
+            {% if current_user.is_authenticated %}
+                <div class="btn btn-outline btn-block disabled">Current Plan</div>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-outline btn-block">Get Started</a>
+            {% endif %}
+        </div>
+
+        <div class="pricing-card featured">
+            <div class="badge">Most Popular</div>
+            <h3>Pro</h3>
+            <p class="price">$9</p>
+            <p class="price-period">per month</p>
+            <ul>
+                <li><i class="fas fa-check"></i> Unlimited invoices</li>
+                <li><i class="fas fa-check"></i> PDF export</li>
+                <li><i class="fas fa-check"></i> Payment tracking</li>
+                <li><i class="fas fa-check"></i> Custom branding</li>
+                <li><i class="fas fa-check"></i> Email reminders</li>
+                <li><i class="fas fa-check"></i> Priority support</li>
+            </ul>
+            {% if current_user.is_authenticated %}
+                {% if current_user.plan == 'pro' %}
+                    <div class="btn btn-primary btn-block disabled">Current Plan</div>
+                {% else %}
+                    <form action="{{ url_for('subscribe') }}" method="POST">
+                        <button type="submit" class="btn btn-primary btn-block">Upgrade to Pro</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-block">Start Free Trial</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

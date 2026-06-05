@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Invoices{% endblock %}
+{% block content %}
+<div class="dashboard-header">
+    <h2>All Invoices</h2>
+    <a href="{{ url_for('invoice_new') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Invoice</a>
+</div>
+
+{% if invoices %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Invoice</th>
+            <th>Client</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for inv in invoices %}
+        <tr>
+            <td><strong>{{ inv.invoice_number }}</strong></td>
+            <td>{{ inv.client_name }}</td>
+            <td>${{ "%.2f"|format(inv.total) }}</td>
+            <td><span class="status status-{{ inv.status }}">{{ inv.status }}</span></td>
+            <td>{{ inv.due_date or '-' }}</td>
+            <td class="actions">
+                <a href="{{ url_for('invoice_view', id=inv.id) }}" class="btn-icon" title="View"><i class="fas fa-eye"></i></a>
+                <a href="{{ url_for('invoice_edit', id=inv.id) }}" class="btn-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                <a href="{{ url_for('invoice_pdf', id=inv.id) }}" class="btn-icon" title="PDF"><i class="fas fa-file-pdf"></i></a>
+                {% if inv.status == 'draft' %}
+                <a href="{{ url_for('invoice_send', id=inv.id) }}" class="btn-icon" title="Mark Sent" onclick="return confirm('Mark as sent?')"><i class="fas fa-paper-plane"></i></a>
+                {% endif %}
+                {% if inv.status == 'sent' %}
+                <a href="{{ url_for('invoice_paid', id=inv.id) }}" class="btn-icon" title="Mark Paid" onclick="return confirm('Mark as paid?')"><i class="fas fa-check"></i></a>
+                {% endif %}
+                <a href="{{ url_for('invoice_delete', id=inv.id) }}" class="btn-icon delete" title="Delete" onclick="return confirm('Delete this invoice?')"><i class="fas fa-trash"></i></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-file-invoice fa-3x"></i>
+    <p>No invoices yet. Create your first one!</p>
+    <a href="{{ url_for('invoice_new') }}" class="btn btn-primary">Create Invoice</a>
+</div>
+{% endif %}
+{% endblock %}
